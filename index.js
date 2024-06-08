@@ -1,22 +1,19 @@
-const express = require('express');
-const admin = require('firebase-admin');
-const fileUpload = require('express-fileupload');
-const path = require('path');
-const fs = require('fs');
-const serviceAccount = require('./credentials/fb-credentials.json');
-const cors = require('cors');
-require('dotenv').config();  // Cargar variables de entorno
+import express from 'express';
+import fileUpload from 'express-fileupload';
+import path from 'path';
+import cors from 'cors';
+import { uploadImage } from './controllers/imageController.js';
+import dotenv from 'dotenv';
+
+dotenv.config(); // Cargar variables de entorno
 
 const app = express();
 const port = 3000;
 
-// Inicializa la aplicación de administración de Firebase
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    storageBucket: process.env.FIREBASE_STORAGE_BUCKET, // Reemplaza con la URL del bucket de almacenamiento de Firebase
-});
-
-const bucket = admin.storage().bucket();
+// Para obtener __dirname en ES6
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -32,33 +29,7 @@ app.get('/', (req, res) => {
 });
 
 // Ruta para subir una imagen
-app.post('/upload', async (req, res) => {
-    console.log('body', req.body);
-    console.log('imagenes', req.files);
-    if (!req.files || Object.keys(req.files).length === 0) {
-        return res.status(400).send('No se ha enviado ninguna imagen.');
-    }
-
-    const image = req.files.image;
-    const uploadPath = path.join(__dirname, 'uploads', image.name);
-
-    // Mueve el archivo al directorio de subidas
-    image.mv(uploadPath, async (err) => {
-        if (err) {
-            return res.status(500).send(err);
-        }
-
-        // Sube la imagen al almacenamiento de Firebase
-        const remotePath = `images/${image.name}`;
-        const dataImage = await bucket.upload(uploadPath, { destination: remotePath });
-        console.log('dataImage', dataImage);
-
-        // Elimina el archivo local después de subirlo a Firebase
-        fs.unlinkSync(uploadPath);
-
-        res.send('Imagen subida y almacenada en Firebase exitosamente');
-    });
-});
+app.post('/upload', uploadImage);
 
 app.listen(port, () => {
     console.log(`Servidor escuchando en http://localhost:${port}`);

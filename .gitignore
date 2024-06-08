@@ -15,5 +15,5 @@ dist/
 
 # Archivo de configuración de Visual Studio
 .vsconfig
-credentials/*
+config/*
 package-lock.json

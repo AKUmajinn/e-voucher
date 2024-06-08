@@ -2,6 +2,7 @@
   "name": "akuma-e-voucher",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -16,6 +17,7 @@
     "express-fileupload": "^1.5.0",
     "firebase-admin": "^12.1.1",
     "multer": "^1.4.5-lts.1",
+    "tesseract.js": "^5.1.0",
     "twilio": "^5.1.1"
   }
 }
