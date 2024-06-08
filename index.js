@@ -5,6 +5,7 @@ const path = require('path');
 const fs = require('fs');
 const serviceAccount = require('./credentials/fb-credentials.json');
 const cors = require('cors');
+require('dotenv').config();  // Cargar variables de entorno
 
 const app = express();
 const port = 3000;
@@ -12,7 +13,7 @@ const port = 3000;
 // Inicializa la aplicación de administración de Firebase
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    storageBucket: 'gs://akuma-e-voucher.appspot.com', // Reemplaza con la URL del bucket de almacenamiento de Firebase
+    storageBucket: process.env.FIREBASE_STORAGE_BUCKET, // Reemplaza con la URL del bucket de almacenamiento de Firebase
 });
 
 const bucket = admin.storage().bucket();
