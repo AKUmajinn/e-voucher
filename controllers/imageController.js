@@ -1,6 +1,7 @@
 import path from 'path';
 import { promises as fs } from 'fs';
 import { uploadImageToFirebase } from '../services/firebaseService.js';
+import { recognizeText } from '../services/tesseractService.js';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -17,6 +18,16 @@ async function uploadImage(req, res) {
     try {
         // Mueve el archivo al directorio de subidas
         await image.mv(uploadPath);
+
+        // Procesa la imagen con Tesseract.js
+        const text = await recognizeText(uploadPath);
+        console.log('Texto extraído de la imagen:', text);
+
+        if (!text.toLowerCase().includes('boleta')) {
+            console.log('La imagen no contiene la palabra "boleta".');
+            await fs.unlink(uploadPath); // Elimina el archivo local
+            return res.status(400).send('La imagen no contiene la palabra "boleta".');
+        }
 
         // Sube la imagen a Firebase
         const remotePath = `images/${image.name}`;
