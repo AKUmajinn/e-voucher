@@ -4,14 +4,14 @@ import path from 'path';
 import cors from 'cors';
 import { uploadImage } from './controllers/imageController.js';
 import dotenv from 'dotenv';
+import { initializeFirebase } from './services/firebaseService.js';
+import { fileURLToPath } from 'url';
 
 dotenv.config(); // Cargar variables de entorno
 
 const app = express();
 const port = 3000;
 
-// Para obtener __dirname en ES6
-import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -28,9 +28,12 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
 });
 
-// Ruta para subir una imagen
-app.post('/upload', uploadImage);
+// Inicializa Firebase y luego escucha en el puerto
+initializeFirebase().then(() => {
+    // Ruta para subir una imagen
+    app.post('/upload', uploadImage);
 
-app.listen(port, () => {
-    console.log(`Servidor escuchando en http://localhost:${port}`);
+    app.listen(port, () => {
+        console.log(`Servidor escuchando en http://localhost:${port}`);
+    });
 });
