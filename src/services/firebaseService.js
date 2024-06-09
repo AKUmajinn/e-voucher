@@ -15,7 +15,7 @@ const __dirname = path.dirname(__filename);
 let bucket;
 
 async function initializeFirebase() {
-    const serviceAccountPath = path.join(__dirname, '..', 'config', 'fb-credentials.json');
+    const serviceAccountPath = path.join(__dirname, '..', '..', 'config', 'fb-credentials.json');
 
     const serviceAccountData = await fs.readFile(serviceAccountPath, 'utf-8');
     const serviceAccount = JSON.parse(serviceAccountData);

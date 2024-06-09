@@ -3,7 +3,7 @@ function uploadImage() {
     const statusElement = document.getElementById('status');
 
     const formData = new FormData(form);
-    console.log(formData);
+
     fetch('http://localhost:3000/upload', {
         method: 'POST',
         body: formData,

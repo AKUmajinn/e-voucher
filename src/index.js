@@ -21,11 +21,11 @@ app.use(cors({ origin: '*' }));
 app.use(fileUpload());
 
 // Configura la carpeta frontend como pública para servir archivos estáticos
-app.use(express.static(path.join(__dirname, 'frontend')));
+app.use(express.static(path.join(__dirname, '..', 'frontend')));
 
 // Ruta para servir el archivo HTML principal
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
+    res.sendFile(path.join(__dirname, 'frontend', '..', 'index.html'));
 });
 
 // Inicializa Firebase y luego escucha en el puerto
