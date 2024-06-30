@@ -59,4 +59,16 @@ function generateVoucherPath(voucherDateArray, creationDate) {
     return `boletas/${monthDirectory}/${formattedCreationDate}`;
 }
 
-export { formatDate, extractDateFromText, generateVoucherPath };
+/**
+ * Extrae el número de RUC del texto.
+ * @param {string} text - El texto que contiene el RUC.
+ * @returns {string|null} El número de RUC encontrado o null si no se encuentra un RUC válido.
+ */
+function extractRUC(text) {
+
+    const rucPattern = /\b[Rr][Uu][Cc][\s:]*([\d]{11})\b/;
+    const match = text.match(rucPattern);
+    return match ? match[1] : null;
+}
+
+export { formatDate, extractDateFromText, generateVoucherPath, extractRUC };

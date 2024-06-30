@@ -32,8 +32,29 @@ async function initializeFirebase() {
 async function uploadImageToFirebase(imagePath, remotePath) {
     // Sube la imagen al almacenamiento de Firebase
     const dataImage = await bucket.upload(imagePath, { destination: remotePath });
-    console.log('Imagen subida a Firebase:', dataImage);
+    console.log('Imagen subida a Firebase:');
     return dataImage;
 }
 
-export { initializeFirebase, uploadImageToFirebase };
+/**
+ * Obtiene una url publica de la image subida a firebase
+ * @param {String} remotePath - ruta de la imagen creada en firebase (boletas/junio/30-06-2024)
+ * @returns {string} - URL pública de la imagen
+ */
+async function getPublicUrl(remotePath) {
+    const file = bucket.file(remotePath);
+
+    try {
+        const [url] = await file.getSignedUrl({
+            action: 'read',
+            expires: '2099-12-31',
+        });
+
+        return url;
+    } catch (error) {
+        console.error('Error al obtener la URL pública:', error);
+        throw error;
+    }
+}
+
+export { initializeFirebase, uploadImageToFirebase, getPublicUrl };

@@ -1,9 +1,8 @@
 import path from 'path';
-import { promises as fs } from 'fs';
 import { uploadImageToFirebase } from './firebaseService.js';
 import { moveFile, deleteFile } from './fileService.js';
 import { recognizeText } from './tesseractService.js';
-import { formatDate, extractDateFromText, generateVoucherPath } from '../utils/utils.js';
+import { formatDate, extractDateFromText, generateVoucherPath, extractRUC } from '../utils/utils.js';
 
 
 async function handleImageUpload(image, creationDate) {
@@ -11,6 +10,7 @@ async function handleImageUpload(image, creationDate) {
     const text = await recognizeText(uploadPath);
     const extractedDate = extractDateFromText(text);
     ;
+    const ruc = extractRUC(text);
     // Mueve el archivo al directorio de subidas
     await moveFile(image, uploadPath);
 
@@ -18,10 +18,15 @@ async function handleImageUpload(image, creationDate) {
         await deleteFile(uploadPath);
         throw new Error('La imagen no contiene la palabra "boleta".');
     }
-    const remotePath = generateVoucherPath(extractedDate, formatDate(creationDate));
+    const voucherDate = formatDate(creationDate);
+    const remotePath = generateVoucherPath(extractedDate, voucherDate);
     const dataImage = await uploadImageToFirebase(uploadPath, remotePath);
     await deleteFile(uploadPath);
-    return dataImage;
+    return {
+        file: dataImage[0],
+        ruc,
+        date: voucherDate
+    };
 }
 
 export { handleImageUpload };
